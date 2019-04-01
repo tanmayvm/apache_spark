@@ -1,0 +1,22 @@
+#Below code is for join on a[0](first element of the file) written in python
+
+from pyspark import SparkContext
+from pyspark.sql import SQLContext
+
+
+sCont = SparkContext()
+sqlCont = SQLContext(sCont)
+
+rdd1 = sCont.textFile('file1')
+rdd2 = sCont.textFile('file2')
+count1 = rdd1.map(lambda a: a.split(",")).map(lambda a: (a[0], (a[1], a[2])))
+count2 = rdd2.map(lambda a: a.split(",")).map(lambda a: (a[0], (a[1], a[2])))
+
+join_all = count1.join(count2)
+
+# Either
+sqlCont.createDataFrame(join_all).show()
+
+# or
+for i in join_all.glom().collect():
+    print(i)
