@@ -1,0 +1,21 @@
+#Code written in python
+#create a input file in desired path
+
+
+from pyspark import SparkContext
+from pyspark.sql import SQLContext
+from operator import add
+
+sCont = SparkContext()
+sqlCont = SQLContext(sCont)
+
+path = "/home/input"
+rdd = sCont.textFile(path)
+count = rdd.flatMap(lambda a: a.split(",")).map(lambda a: (a, 1)).reduceByKey(add).collect()
+
+#Read output as List:
+for x in count:
+    print x
+
+#Read output as Table:
+sqlCont.createDataFrame(count).toDF("Word", "Count").show()
